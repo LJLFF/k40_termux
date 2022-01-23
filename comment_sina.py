@@ -87,18 +87,23 @@ max_id={max_id}&count=20&uid={uid}'
     return next_url
 
 def main(blog_id,uid,max_id,sum,count):
+    ids=[max_id,]#最后一页会随机指定某页的max_id,然后重复抓取 用列表存起来，有重复的就停止
     try:
         while True:
             url = next_url(blog_id,uid,max_id)
             html_json = request(url)
             max_id,infos = parse(html_json)
             sum += len(infos)
-            #最后一页max_id为0
-            if max_id == 0:
+            
+            if max_id in ids:
+                
                 save(infos)
                 count += 1
+                print(max_id)
+                print(ids)
                 print( f'最后一页第{count}页评论爬取完毕! 共爬取{sum}条评论。')
                 break
+            ids.append(max_id)
             #解析得到的json数据,				返回的json数据data可能为空
             if infos==[]:
             	continue
